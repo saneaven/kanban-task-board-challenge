@@ -166,7 +166,7 @@ create table public.task_activity (
   task_id    uuid not null,
   user_id    uuid not null,
   action     text not null
-             check (action in ('created', 'status_changed', 'edited', 'assigned', 'unassigned')),
+             check (action in ('created', 'status_changed', 'edited', 'assigned', 'unassigned', 'labeled', 'unlabeled')),
   details    jsonb not null default '{}',
   created_at timestamptz not null default now(),
   foreign key (task_id, user_id)
@@ -184,8 +184,10 @@ create policy "Users read their own task activity"
 
 grant select on public.task_activity to authenticated;
 
--- details: status_changed {from, to}; edited {fields}. Reordering a task within
--- a column changes only position and is not logged.
+-- details: created {status}; status_changed {from, to}; edited {fields, priority,
+-- due_date}, where fields names what changed and priority and due_date hold the values
+-- after the edit. Reordering a task within a column changes only position and is not
+-- logged.
 create function public.log_task_changes()
 returns trigger
 language plpgsql
@@ -194,8 +196,8 @@ set search_path = ''
 as $$
 begin
   if tg_op = 'INSERT' then
-    insert into public.task_activity (task_id, user_id, action)
-    values (new.id, new.user_id, 'created');
+    insert into public.task_activity (task_id, user_id, action, details)
+    values (new.id, new.user_id, 'created', jsonb_build_object('status', new.status));
     return null;
   end if;
 
@@ -208,12 +210,16 @@ begin
   if (new.title, new.description, new.priority, new.due_date)
      is distinct from (old.title, old.description, old.priority, old.due_date) then
     insert into public.task_activity (task_id, user_id, action, details)
-    values (new.id, new.user_id, 'edited', jsonb_build_object('fields', array_remove(array[
-      case when new.title is distinct from old.title then 'title' end,
-      case when new.description is distinct from old.description then 'description' end,
-      case when new.priority is distinct from old.priority then 'priority' end,
-      case when new.due_date is distinct from old.due_date then 'due_date' end
-    ], null)));
+    values (new.id, new.user_id, 'edited', jsonb_build_object(
+      'fields', array_remove(array[
+        case when new.title is distinct from old.title then 'title' end,
+        case when new.description is distinct from old.description then 'description' end,
+        case when new.priority is distinct from old.priority then 'priority' end,
+        case when new.due_date is distinct from old.due_date then 'due_date' end
+      ], null),
+      'priority', new.priority,
+      'due_date', new.due_date
+    ));
   end if;
 
   return null;
@@ -263,3 +269,38 @@ revoke execute on function public.log_task_assignee_changes() from public, anon,
 create trigger log_task_assignee_changes
   after insert or delete on public.task_assignees
   for each row execute function public.log_task_assignee_changes();
+
+-- details: {label_id, label_name}. Follows the same rules as assignees above.
+create function public.log_task_label_changes()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  tagging public.task_labels := case when tg_op = 'INSERT' then new else old end;
+  label_name text;
+begin
+  select name into label_name
+  from public.labels
+  where id = tagging.label_id;
+
+  if label_name is null
+     or not exists (select 1 from public.tasks where id = tagging.task_id) then
+    return null;
+  end if;
+
+  insert into public.task_activity (task_id, user_id, action, details)
+  values (tagging.task_id, tagging.user_id,
+          case when tg_op = 'INSERT' then 'labeled' else 'unlabeled' end,
+          jsonb_build_object('label_id', tagging.label_id, 'label_name', label_name));
+
+  return null;
+end;
+$$;
+
+revoke execute on function public.log_task_label_changes() from public, anon, authenticated;
+
+create trigger log_task_label_changes
+  after insert or delete on public.task_labels
+  for each row execute function public.log_task_label_changes();
