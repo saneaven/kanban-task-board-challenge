@@ -22,7 +22,8 @@ export function useOptimisticBoardData<T>(queryKey: QueryKey, data: T[]): T[] {
 
 export function useBoardMutation() {
   const client = useQueryClient()
-  const [failed, setFailed] = useState<BoardOperation | null>(null)
+  const [failures, setFailures] = useState<BoardOperation[]>([])
+  const failed = failures[0]
   const queryKey = failed?.queryKey ?? []
   const currentData = useOptimisticBoardData(queryKey, client.getQueryData<unknown[]>(queryKey) ?? [])
   const mutation = useMutation({
@@ -35,7 +36,7 @@ export function useBoardMutation() {
     onSuccess: (_data, operation) => {
       client.setQueryData<unknown[]>(operation.queryKey, (current) => operation.update(current ?? []))
     },
-    onError: (_error, operation) => setFailed((current) => current ?? operation),
+    onError: (_error, operation) => setFailures((current) => [...current, operation]),
     onSettled: () => {
       if (client.isMutating({ mutationKey: ['board'] }) === 1) {
         void client.invalidateQueries()
@@ -56,10 +57,10 @@ export function useBoardMutation() {
     toast: failed ? {
       text: failed.errorText(currentData),
       retry: () => {
-        setFailed(null)
+        setFailures((current) => current.slice(1))
         mutation.mutate(failed)
       },
-      dismiss: () => setFailed(null),
+      dismiss: () => setFailures((current) => current.slice(1)),
     } : null,
   }
 }

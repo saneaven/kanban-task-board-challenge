@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchLabels } from '../labels/api'
-import { fetchTasks, type TaskRow } from '../tasks/api'
+import { fetchTasks } from '../tasks/api'
 import { dueStatus } from '../tasks/dueStatus'
 import { fetchMembers } from '../team/api'
 import { initials } from '../team/initials'
@@ -9,7 +9,7 @@ import { useOptimisticBoardData } from './useBoardMutation'
 
 export function useBoardData(enabled: boolean) {
   const options = { enabled, networkMode: 'always' as const, refetchOnReconnect: true, retry: false as const }
-  const tasksQuery = useQuery<TaskRow[]>({ queryKey: ['tasks'], queryFn: fetchTasks, ...options })
+  const tasksQuery = useQuery({ queryKey: ['tasks'], queryFn: fetchTasks, ...options })
   const membersQuery = useQuery({ queryKey: ['members'], queryFn: fetchMembers, ...options })
   const labelsQuery = useQuery({ queryKey: ['labels'], queryFn: fetchLabels, ...options })
 

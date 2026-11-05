@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { DragDropProvider, DragOverlay, PointerSensor } from '@dnd-kit/react'
 import { Accessibility, PointerActivationConstraints } from '@dnd-kit/dom'
 import { Button } from '../../ui/Button'
@@ -47,6 +47,7 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null)
   const [composerStatus, setComposerStatus] = useState<TaskStatus | null>(null)
   const [isAddingMember, setIsAddingMember] = useState(false)
+  const addMemberToggle = useRef<HTMLButtonElement>(null)
 
   const isLoading = !hasData
   const isError = sessionStatus === 'error' || queryError
@@ -290,6 +291,7 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
             </div>
             <button
               type="button"
+              ref={addMemberToggle}
               className={styles.addMember}
               disabled={isLoading}
               aria-label="Add team member"
@@ -298,7 +300,15 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
             >
               <PlusIcon />
             </button>
-            {isAddingMember && <AddMemberForm onAdd={(name) => addMember(name)} onClose={() => setIsAddingMember(false)} />}
+            {isAddingMember && (
+              <AddMemberForm
+                onAdd={(name) => addMember(name)}
+                onClose={() => {
+                  setIsAddingMember(false)
+                  addMemberToggle.current?.focus()
+                }}
+              />
+            )}
           </div>
 
           <Button variant="accent" className={styles.newTask} disabled={isLoading} onClick={() => setComposerStatus('todo')}>
