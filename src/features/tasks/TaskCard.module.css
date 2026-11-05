@@ -1,0 +1,107 @@
+.card {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 var(--color-border);
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.16s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px var(--color-border);
+}
+
+.highTag {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-action);
+  color: var(--color-on-action);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.28;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
+}
+
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.due {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dueSoon,
+.dueOverdue {
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.dueSoon {
+  background: var(--color-due-soon);
+  color: var(--color-on-due-soon);
+}
+
+.dueOverdue {
+  background: var(--color-overdue);
+  color: var(--color-on-overdue);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.comments {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.comments svg {
+  width: 13px;
+  height: 13px;
+}
+
+.assignees {
+  display: flex;
+}
+
+.avatar {
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+.avatar + .avatar {
+  margin-left: -2px;
+}

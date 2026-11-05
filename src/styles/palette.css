@@ -1,0 +1,76 @@
+:root {
+  /* Base palette: raw color values live only here. Components use --color-* tokens. */
+  --palette-black: #0f0f10;
+  --palette-gray-900: #1f1f22;
+  --palette-gray-800: #2c2c30;
+  --palette-gray-700: #45454c;
+  --palette-gray-300: #c9c9cf;
+  --palette-gray-100: #f1f1f3;
+  --palette-white: #ffffff;
+
+  --palette-fog: #dce3ea;
+  --palette-yellow: #ffd02e;
+  --palette-yellow-light: #ffdc63;
+  --palette-lilac: #bba8ff;
+  --palette-mint: #9be8b4;
+
+  --palette-red: #d42e08;
+  --palette-coral: #ff8a6b;
+
+  --palette-pink: #f784c8;
+  --palette-teal: #1ad1d1;
+  --palette-lime: #b1dd54;
+  --palette-blue: #59bbfb;
+
+  /* Text */
+  --color-text: var(--palette-black);
+  --color-text-secondary: var(--palette-gray-700);
+  --color-text-inverse: var(--palette-white);
+  --color-text-inverse-secondary: var(--palette-gray-300);
+
+  /* Surfaces */
+  --color-surface: var(--palette-white);
+  --color-surface-muted: var(--palette-gray-100);
+  --color-surface-on-status: color-mix(in srgb, var(--palette-white) 60%, transparent);
+  --color-surface-inverse: var(--palette-black);
+  --color-surface-inverse-raised: var(--palette-gray-900);
+
+  /* Actions */
+  --color-action: var(--palette-black);
+  --color-action-hover: var(--palette-gray-800);
+  --color-on-action: var(--palette-white);
+  --color-action-accent: var(--palette-yellow);
+  --color-action-accent-hover: var(--palette-yellow-light);
+  --color-on-action-accent: var(--palette-black);
+  --color-focus: var(--palette-black);
+  --color-focus-inverse: var(--palette-yellow);
+
+  /* Task status */
+  --color-status-todo: var(--palette-fog);
+  --color-status-in-progress: var(--palette-yellow);
+  --color-status-in-review: var(--palette-lilac);
+  --color-status-done: var(--palette-mint);
+
+  /* Due dates and errors */
+  --color-overdue: var(--palette-red);
+  --color-on-overdue: var(--palette-white);
+  --color-overdue-inverse: var(--palette-coral);
+  --color-due-soon: var(--palette-yellow);
+  --color-on-due-soon: var(--palette-black);
+
+  /* Team member avatars */
+  --color-avatar-1: var(--palette-pink);
+  --color-avatar-2: var(--palette-teal);
+  --color-avatar-3: var(--palette-lime);
+  --color-avatar-4: var(--palette-blue);
+  --color-on-avatar: var(--palette-black);
+
+  /* Lines and overlays */
+  --color-border: color-mix(in srgb, var(--palette-black) 16%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--palette-black) 40%, transparent);
+  --color-border-inverse: color-mix(in srgb, var(--palette-white) 30%, transparent);
+  --color-drop-target: color-mix(in srgb, var(--palette-black) 10%, transparent);
+  --color-scrim: color-mix(in srgb, var(--palette-black) 50%, transparent);
+  --color-skeleton: color-mix(in srgb, var(--palette-white) 55%, transparent);
+  --color-skeleton-shine: color-mix(in srgb, var(--palette-white) 75%, transparent);
+}
