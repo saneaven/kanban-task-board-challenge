@@ -59,3 +59,19 @@ export function ChatIcon() {
     </Icon>
   )
 }
+
+export function WarningIcon() {
+  return (
+    <Icon>
+      <path d="M8 2.5l6 10.5H2zM8 6.5v3M8 11.2v.1" />
+    </Icon>
+  )
+}
+
+export function RetryIcon() {
+  return (
+    <Icon>
+      <path d="M13 8a5 5 0 1 1-1.5-3.5M13 2.5v3h-3" />
+    </Icon>
+  )
+}

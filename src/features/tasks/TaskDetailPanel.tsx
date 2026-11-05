@@ -4,7 +4,8 @@ import { CloseIcon } from '../../ui/icons'
 import inputStyles from '../../ui/Input.module.css'
 import { OptionButton, OptionRow } from '../../ui/Option'
 import { ActivityTimeline } from '../activity/ActivityTimeline'
-import { columns, columnsByStatus, labels, members, priorities, type MockTask } from '../board/mockData'
+import { columns, columnsByStatus } from '../board/columns'
+import { priorities, priorityNames, type Label, type Member, type Task } from '../board/types'
 import { CommentForm } from '../comments/CommentForm'
 import { Avatar } from '../team/Avatar'
 import { DueBadge } from './DueBadge'
@@ -19,7 +20,14 @@ function Property({ name, children }: { name: string; children: ReactNode }) {
   )
 }
 
-export function TaskDetailPanel({ task, onClose }: { task: MockTask; onClose: () => void }) {
+type TaskDetailPanelProps = {
+  task: Task
+  members: Member[]
+  labels: Label[]
+  onClose: () => void
+}
+
+export function TaskDetailPanel({ task, members, labels, onClose }: TaskDetailPanelProps) {
   const column = columnsByStatus[task.status]
 
   return (
@@ -47,7 +55,7 @@ export function TaskDetailPanel({ task, onClose }: { task: MockTask; onClose: ()
             <Property name="Priority">
               {priorities.map((priority) => (
                 <OptionButton key={priority} selected={priority === task.priority}>
-                  {priority}
+                  {priorityNames[priority]}
                 </OptionButton>
               ))}
             </Property>
@@ -67,7 +75,7 @@ export function TaskDetailPanel({ task, onClose }: { task: MockTask; onClose: ()
             </div>
             <Property name="Assignees">
               {members.map((member) => (
-                <OptionButton key={member.id} selected={task.assignees.includes(member)}>
+                <OptionButton key={member.id} selected={task.assignees.some((assignee) => assignee.id === member.id)}>
                   <Avatar member={member} className={styles.optionAvatar} />
                   {member.name}
                 </OptionButton>
@@ -75,8 +83,8 @@ export function TaskDetailPanel({ task, onClose }: { task: MockTask; onClose: ()
             </Property>
             <Property name="Labels">
               {labels.map((label) => (
-                <OptionButton key={label} selected={task.labels.includes(label)}>
-                  {label}
+                <OptionButton key={label.id} selected={task.labels.some((selected) => selected.id === label.id)}>
+                  {label.name}
                 </OptionButton>
               ))}
             </Property>
@@ -84,7 +92,7 @@ export function TaskDetailPanel({ task, onClose }: { task: MockTask; onClose: ()
 
           <section className={styles.feed} aria-label="Activity">
             <h3 className={styles.feedTitle}>Activity</h3>
-            <ActivityTimeline items={task.timeline} />
+            <ActivityTimeline items={[]} />
             <CommentForm />
           </section>
         </div>

@@ -3,7 +3,8 @@ import { Button } from '../../ui/Button'
 import { Dialog } from '../../ui/Dialog'
 import inputStyles from '../../ui/Input.module.css'
 import { OptionButton, OptionRow } from '../../ui/Option'
-import { columns, priorities, type TaskStatus } from '../board/mockData'
+import { columns } from '../board/columns'
+import { priorities, priorityNames, type TaskStatus } from '../board/types'
 import styles from './TaskComposer.module.css'
 
 export function TaskComposer({ status, onClose }: { status: TaskStatus; onClose: () => void }) {
@@ -36,8 +37,8 @@ export function TaskComposer({ status, onClose }: { status: TaskStatus; onClose:
             <span className={styles.label}>Priority</span>
             <OptionRow>
               {priorities.map((priority) => (
-                <OptionButton key={priority} selected={priority === 'Normal'}>
-                  {priority}
+                <OptionButton key={priority} selected={priority === 'normal'}>
+                  {priorityNames[priority]}
                 </OptionButton>
               ))}
             </OptionRow>

@@ -1,6 +1,8 @@
 import { isAuthSessionMissingError } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
 
+export type GuestSessionStatus = 'pending' | 'ready' | 'error'
+
 let guestSessionPromise: Promise<void> | null = null
 
 async function secureGuestSession(): Promise<void> {

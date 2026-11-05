@@ -1,17 +1,12 @@
 import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ensureGuestSession } from './features/auth/guestSession'
+import { ensureGuestSession, type GuestSessionStatus } from './features/auth/guestSession'
 import { Board } from './features/board/Board'
 
 const queryClient = new QueryClient()
 
-type SessionState =
-  | { status: 'pending' }
-  | { status: 'ready' }
-  | { status: 'error'; message: string }
-
 export default function App() {
-  const [session, setSession] = useState<SessionState>({ status: 'pending' })
+  const [session, setSession] = useState<GuestSessionStatus>('pending')
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
@@ -19,15 +14,10 @@ export default function App() {
 
     ensureGuestSession().then(
       () => {
-        if (active) setSession({ status: 'ready' })
+        if (active) setSession('ready')
       },
-      (error: unknown) => {
-        if (active) {
-          setSession({
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Could not set up your guest session.',
-          })
-        }
+      () => {
+        if (active) setSession('error')
       },
     )
 
@@ -36,26 +26,14 @@ export default function App() {
     }
   }, [attempt])
 
+  function retrySession() {
+    setSession('pending')
+    setAttempt((value) => value + 1)
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      {session.status === 'pending' ? (
-        <p role="status">Setting up your guest session…</p>
-      ) : session.status === 'error' ? (
-        <div role="alert">
-          <p>{session.message}</p>
-          <button
-            type="button"
-            onClick={() => {
-              setSession({ status: 'pending' })
-              setAttempt((value) => value + 1)
-            }}
-          >
-            Retry
-          </button>
-        </div>
-      ) : (
-        <Board />
-      )}
+      <Board sessionStatus={session} onRetrySession={retrySession} />
     </QueryClientProvider>
   )
 }

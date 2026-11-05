@@ -1,4 +1,4 @@
-import type { MockDue } from '../board/mockData'
+import type { Due } from '../board/types'
 import styles from './DueBadge.module.css'
 
 const toneClass = {
@@ -6,6 +6,6 @@ const toneClass = {
   overdue: styles.overdue,
 }
 
-export function DueBadge({ due }: { due: MockDue }) {
+export function DueBadge({ due }: { due: Due }) {
   return <span className={`${styles.due} ${due.tone ? toneClass[due.tone] : ''}`}>{due.label}</span>
 }

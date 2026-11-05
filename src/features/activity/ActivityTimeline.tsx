@@ -1,4 +1,5 @@
-import { guest, type TimelineItem } from '../board/mockData'
+import { guest } from '../board/mockData'
+import type { TimelineItem } from '../board/types'
 import { Avatar } from '../team/Avatar'
 import styles from './ActivityTimeline.module.css'
 

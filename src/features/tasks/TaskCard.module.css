@@ -44,6 +44,10 @@
   font-weight: 500;
 }
 
+.labels:empty {
+  display: none;
+}
+
 .footer {
   display: flex;
   align-items: center;
