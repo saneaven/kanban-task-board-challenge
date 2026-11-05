@@ -1,0 +1,62 @@
+.toast {
+  position: var(--toast-position, absolute);
+  right: 0;
+  bottom: 24px;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: var(--toast-max-width, calc(100% - 32px));
+  margin-inline: auto;
+  padding: 8px 8px 8px 16px;
+  border-radius: 16px;
+  background: var(--color-surface-inverse);
+  box-shadow: 0 12px 32px var(--color-border-strong);
+  color: var(--color-text-inverse);
+  overflow-wrap: anywhere;
+  animation: pop-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.toast :focus-visible {
+  outline-color: var(--color-focus-inverse);
+}
+
+.action {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.dismiss {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.dismiss:hover {
+  background: var(--color-action-hover);
+}
+
+@keyframes pop-in {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .toast {
+    bottom: 16px;
+  }
+
+  .dismiss {
+    width: 44px;
+    height: 44px;
+  }
+}

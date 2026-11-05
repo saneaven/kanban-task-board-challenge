@@ -1,21 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchLabels } from '../labels/api'
-import { fetchTasks } from '../tasks/api'
+import { fetchTasks, type TaskRow } from '../tasks/api'
 import { dueStatus } from '../tasks/dueStatus'
 import { fetchMembers } from '../team/api'
 import { initials } from '../team/initials'
 import type { Member, Priority, Task, TaskStatus } from './types'
+import { useOptimisticBoardData } from './useBoardMutation'
 
 export function useBoardData(enabled: boolean) {
   const options = { enabled, networkMode: 'always' as const, refetchOnReconnect: true, retry: false as const }
-  const tasksQuery = useQuery({ queryKey: ['tasks'], queryFn: fetchTasks, ...options })
+  const tasksQuery = useQuery<TaskRow[]>({ queryKey: ['tasks'], queryFn: fetchTasks, ...options })
   const membersQuery = useQuery({ queryKey: ['members'], queryFn: fetchMembers, ...options })
   const labelsQuery = useQuery({ queryKey: ['labels'], queryFn: fetchLabels, ...options })
 
-  const taskRows = tasksQuery.data
+  const taskRows = useOptimisticBoardData(['tasks'], tasksQuery.data ?? [])
   const memberRows = membersQuery.data
   const labelRows = labelsQuery.data
-  const hasData = taskRows !== undefined && memberRows !== undefined && labelRows !== undefined
+  const hasData = tasksQuery.data !== undefined && memberRows !== undefined && labelRows !== undefined
 
   const members: Member[] = hasData ? memberRows.map((member) => ({
     id: member.id,
@@ -35,7 +36,7 @@ export function useBoardData(enabled: boolean) {
     assignees: members.filter((member) => task.task_assignees.some((assignee) => assignee.member_id === member.id)),
     due: dueStatus(task.due_date, task.status as TaskStatus),
     commentCount: task.comments[0].count,
-  })) : []
+  })).sort((left, right) => left.position - right.position) : []
 
   function retry() {
     if (tasksQuery.isError) void tasksQuery.refetch()

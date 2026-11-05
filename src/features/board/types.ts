@@ -55,3 +55,11 @@ export type Task = {
   due?: Due
   commentCount: number
 }
+
+export type TaskDraft = {
+  title: string
+  description: string | null
+  priority: Priority
+  dueDate: string | null
+  status: TaskStatus
+}

@@ -5,9 +5,9 @@ export function OptionRow({ children }: { children: ReactNode }) {
   return <div className={styles.row}>{children}</div>
 }
 
-export function OptionButton({ selected, children }: { selected: boolean; children: ReactNode }) {
+export function OptionButton({ selected, onClick, children }: { selected: boolean; onClick?: () => void; children: ReactNode }) {
   return (
-    <button type="button" className={`${styles.option} ${selected ? styles.selected : ''}`} aria-pressed={selected}>
+    <button type="button" className={`${styles.option} ${selected ? styles.selected : ''}`} aria-pressed={selected} onClick={onClick}>
       {children}
     </button>
   )

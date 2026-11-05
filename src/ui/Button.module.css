@@ -27,7 +27,7 @@
   font-weight: 600;
 }
 
-.accent:hover {
+.accent:enabled:hover {
   background: var(--color-action-accent-hover);
 }
 

@@ -9,12 +9,27 @@
   border-radius: 14px;
   background: var(--color-surface);
   box-shadow: 0 1px 0 var(--color-border);
+  cursor: grab;
+  user-select: none;
   transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.16s;
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px var(--color-border);
+}
+
+.source {
+  opacity: 0.32;
+}
+
+.landed {
+  animation: land 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+
+.ghost {
+  box-shadow: 0 22px 44px var(--color-border-strong);
+  animation: lift 0.14s ease-out forwards;
 }
 
 .highTag {
@@ -86,4 +101,16 @@
 
 .avatar + .avatar {
   margin-left: -2px;
+}
+
+@keyframes land {
+  from {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes lift {
+  to {
+    transform: rotate(-2deg) scale(1.03);
+  }
 }

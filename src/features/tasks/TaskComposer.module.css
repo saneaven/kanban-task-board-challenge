@@ -1,4 +1,7 @@
 .composer {
+  --toast-position: sticky;
+  --toast-max-width: 100%;
+
   width: min(560px, calc(100% - 32px));
   max-width: 100%;
   max-height: calc(100dvh - 32px);
@@ -39,6 +42,12 @@
 .label {
   font-size: 13px;
   font-weight: 600;
+}
+
+.fieldError {
+  color: var(--color-overdue);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .row {

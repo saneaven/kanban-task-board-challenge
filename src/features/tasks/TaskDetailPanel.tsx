@@ -5,7 +5,7 @@ import inputStyles from '../../ui/Input.module.css'
 import { OptionButton, OptionRow } from '../../ui/Option'
 import { ActivityTimeline } from '../activity/ActivityTimeline'
 import { columns, columnsByStatus } from '../board/columns'
-import { priorities, priorityNames, type Label, type Member, type Task } from '../board/types'
+import { priorities, priorityNames, type Label, type Member, type Task, type TaskStatus } from '../board/types'
 import { CommentForm } from '../comments/CommentForm'
 import { Avatar } from '../team/Avatar'
 import { DueBadge } from './DueBadge'
@@ -24,10 +24,12 @@ type TaskDetailPanelProps = {
   task: Task
   members: Member[]
   labels: Label[]
+  toast: ReactNode
+  onStatusChange: (status: TaskStatus) => void
   onClose: () => void
 }
 
-export function TaskDetailPanel({ task, members, labels, onClose }: TaskDetailPanelProps) {
+export function TaskDetailPanel({ task, members, labels, toast, onStatusChange, onClose }: TaskDetailPanelProps) {
   const column = columnsByStatus[task.status]
 
   return (
@@ -47,7 +49,11 @@ export function TaskDetailPanel({ task, members, labels, onClose }: TaskDetailPa
           <div className={styles.properties}>
             <Property name="Status">
               {columns.map((option) => (
-                <OptionButton key={option.status} selected={option.status === task.status}>
+                <OptionButton
+                  key={option.status}
+                  selected={option.status === task.status}
+                  onClick={() => { if (option.status !== task.status) onStatusChange(option.status) }}
+                >
                   {option.name}
                 </OptionButton>
               ))}
@@ -97,6 +103,7 @@ export function TaskDetailPanel({ task, members, labels, onClose }: TaskDetailPa
           </section>
         </div>
       </div>
+      {toast}
     </Dialog>
   )
 }

@@ -1,4 +1,5 @@
 .app {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100dvh;
@@ -243,6 +244,11 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  transition: box-shadow 0.12s;
+}
+
+.over {
+  box-shadow: inset 0 0 0 5px var(--color-text);
 }
 
 .columnTop {
@@ -276,7 +282,7 @@
   transition: background-color 0.12s;
 }
 
-.addTask:hover {
+.addTask:enabled:hover {
   background: var(--color-action-hover);
 }
 
@@ -296,6 +302,13 @@
   overflow-y: auto;
   scrollbar-color: var(--color-border-strong) transparent;
   scrollbar-width: thin;
+}
+
+.placeholder {
+  flex: none;
+  border-radius: 14px;
+  background: var(--color-drop-target);
+  animation: placeholder-in 0.16s ease-out;
 }
 
 .columnHint {
@@ -347,6 +360,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+@keyframes placeholder-in {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 320px;
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
@@ -411,6 +436,10 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+  }
+
+  .dragging .columns {
+    scroll-snap-type: none;
   }
 
   .column {

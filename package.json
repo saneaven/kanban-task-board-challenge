@@ -10,6 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@dnd-kit/dom": "^0.5.3",
+    "@dnd-kit/react": "^0.5.3",
     "@supabase/supabase-js": "^2.119.0",
     "@tanstack/react-query": "^5.106.0",
     "react": "^19.3.1",
