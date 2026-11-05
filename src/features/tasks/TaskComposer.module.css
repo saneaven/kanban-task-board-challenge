@@ -1,0 +1,71 @@
+.composer {
+  width: min(560px, calc(100% - 32px));
+  max-width: 100%;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  overflow-y: auto;
+  border: 0;
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: 0 24px 60px var(--color-border-strong);
+  color: var(--color-text);
+  animation: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.composer::backdrop {
+  background: var(--color-scrim);
+  animation: fade-in 0.16s ease-out;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.heading {
+  font: 800 30px/1 var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.dueInput {
+  width: auto;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes pop-in {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

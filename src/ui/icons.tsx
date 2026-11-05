@@ -26,6 +26,14 @@ export function PlusIcon() {
   )
 }
 
+export function CloseIcon() {
+  return (
+    <Icon>
+      <path d="M4 4l8 8M12 4l-8 8" />
+    </Icon>
+  )
+}
+
 export function SearchIcon() {
   return (
     <Icon>

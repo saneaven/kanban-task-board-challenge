@@ -1,0 +1,21 @@
+.due {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.soon,
+.overdue {
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.soon {
+  background: var(--color-due-soon);
+  color: var(--color-on-due-soon);
+}
+
+.overdue {
+  background: var(--color-overdue);
+  color: var(--color-on-overdue);
+}

@@ -21,13 +21,21 @@ body {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
   font: inherit;
 }
 
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 button,
-input {
+input,
+textarea {
   color: inherit;
   font: inherit;
 }
@@ -43,6 +51,15 @@ button {
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

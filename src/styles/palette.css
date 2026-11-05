@@ -1,26 +1,27 @@
 :root {
   /* Base palette: raw color values live only here. Components use --color-* tokens. */
-  --palette-black: #0f0f10;
-  --palette-gray-900: #1f1f22;
-  --palette-gray-800: #2c2c30;
-  --palette-gray-700: #45454c;
-  --palette-gray-300: #c9c9cf;
-  --palette-gray-100: #f1f1f3;
-  --palette-white: #ffffff;
+  --palette-black: oklch(0.169 0.002 286);
+  --palette-gray-900: oklch(0.241 0.006 286);
+  --palette-gray-800: oklch(0.295 0.007 286);
+  --palette-gray-700: oklch(0.393 0.012 286);
+  --palette-gray-300: oklch(0.838 0.008 286);
+  --palette-gray-100: oklch(0.959 0.003 286);
+  --palette-white: oklch(1 0 0);
 
-  --palette-fog: #dce3ea;
-  --palette-yellow: #ffd02e;
-  --palette-yellow-light: #ffdc63;
-  --palette-lilac: #bba8ff;
-  --palette-mint: #9be8b4;
+  --palette-fog: oklch(0.7094 0.0213 225.46);
+  --palette-yellow: oklch(82.5% 0.16715 93.16);
+  --palette-yellow-light: oklch(91% 0.16715 93.16);
+  --palette-orange: oklch(0.7094 0.1841 31.71);
+  --palette-lilac: oklch(0.7094 0.1841 309.36);
+  --palette-mint: oklch(0.7094 0.1841 138.75);
 
-  --palette-red: #d42e08;
-  --palette-coral: #ff8a6b;
+  --palette-red: oklch(0.5664 0.2057 32.83);
+  --palette-coral: oklch(0.756 0.149 35.8);
 
-  --palette-pink: #f784c8;
-  --palette-teal: #1ad1d1;
-  --palette-lime: #b1dd54;
-  --palette-blue: #59bbfb;
+  --palette-pink: oklch(0.76 0.16 345.1);
+  --palette-teal: oklch(0.7808 0.1302 194.82);
+  --palette-lime: oklch(0.8396 0.1704 125.08);
+  --palette-blue: oklch(0.76 0.13 240.2);
 
   /* Text */
   --color-text: var(--palette-black);
@@ -47,7 +48,7 @@
 
   /* Task status */
   --color-status-todo: var(--palette-fog);
-  --color-status-in-progress: var(--palette-yellow);
+  --color-status-in-progress: var(--palette-orange);
   --color-status-in-review: var(--palette-lilac);
   --color-status-done: var(--palette-mint);
 

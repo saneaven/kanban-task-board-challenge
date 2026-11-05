@@ -1,0 +1,55 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin: 7px 9px;
+  border-radius: 50%;
+  background: var(--color-text);
+}
+
+.event {
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.comment {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--color-surface-on-status);
+}
+
+.commentMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.author {
+  font-weight: 600;
+}
+
+.when {
+  font-size: 12px;
+}
+
+.commentText {
+  line-height: 1.45;
+  text-wrap: pretty;
+}
