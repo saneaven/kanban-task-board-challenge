@@ -1,4 +1,4 @@
-import { guest } from '../board/mockData'
+import { guest } from '../auth/guest'
 import type { TimelineItem } from '../board/types'
 import { Avatar } from '../team/Avatar'
 import styles from './ActivityTimeline.module.css'
@@ -8,7 +8,7 @@ export function ActivityTimeline({ items }: { items: TimelineItem[] }) {
     <ol className={styles.timeline}>
       {items.map((item) =>
         item.kind === 'comment' ? (
-          <li key={item.text} className={styles.item}>
+          <li key={item.id} className={styles.item}>
             <Avatar member={guest} />
             <div className={styles.comment}>
               <p className={styles.commentMeta}>
@@ -19,7 +19,7 @@ export function ActivityTimeline({ items }: { items: TimelineItem[] }) {
             </div>
           </li>
         ) : (
-          <li key={item.text} className={styles.item}>
+          <li key={item.id} className={styles.item}>
             <span className={styles.dot} />
             <p className={styles.event}>
               {item.text} · {item.when}

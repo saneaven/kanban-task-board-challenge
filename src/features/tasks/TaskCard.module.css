@@ -9,6 +9,7 @@
   border-radius: 14px;
   background: var(--color-surface);
   box-shadow: 0 1px 0 var(--color-border);
+  overflow-wrap: anywhere;
   cursor: grab;
   user-select: none;
   transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.16s;

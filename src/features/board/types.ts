@@ -28,7 +28,6 @@ export type Member = {
 export type Label = {
   id: string
   name: string
-  color: string | null
 }
 
 export type Due = {
@@ -38,6 +37,7 @@ export type Due = {
 }
 
 export type TimelineItem = {
+  id: string
   kind: 'event' | 'comment'
   text: string
   when: string

@@ -1,5 +1,4 @@
 import { supabase } from '../../lib/supabase'
-import type { TaskStatus } from '../board/types'
 
 export async function fetchTasks() {
   const { data, error } = await supabase
@@ -20,7 +19,14 @@ export async function createTask(task: NewTask): Promise<void> {
   if (error) throw error
 }
 
-export async function moveTask(id: string, status: TaskStatus, position: number): Promise<void> {
-  const { error } = await supabase.from('tasks').update({ status, position }).eq('id', id).select('id').single()
+export type TaskPatch = Partial<Pick<TaskRow, 'title' | 'description' | 'priority' | 'due_date' | 'status' | 'position'>>
+
+export async function updateTask(id: string, patch: TaskPatch): Promise<void> {
+  const { error } = await supabase.from('tasks').update(patch).eq('id', id).select('id').single()
+  if (error) throw error
+}
+
+export async function deleteTask(id: string): Promise<void> {
+  const { error } = await supabase.from('tasks').delete().eq('id', id)
   if (error) throw error
 }

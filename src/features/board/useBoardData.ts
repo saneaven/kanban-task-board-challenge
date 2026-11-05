@@ -14,9 +14,9 @@ export function useBoardData(enabled: boolean) {
   const labelsQuery = useQuery({ queryKey: ['labels'], queryFn: fetchLabels, ...options })
 
   const taskRows = useOptimisticBoardData(['tasks'], tasksQuery.data ?? [])
-  const memberRows = membersQuery.data
-  const labelRows = labelsQuery.data
-  const hasData = tasksQuery.data !== undefined && memberRows !== undefined && labelRows !== undefined
+  const memberRows = useOptimisticBoardData(['members'], membersQuery.data ?? [])
+  const labelRows = useOptimisticBoardData(['labels'], labelsQuery.data ?? [])
+  const hasData = tasksQuery.data !== undefined && membersQuery.data !== undefined && labelsQuery.data !== undefined
 
   const members: Member[] = hasData ? memberRows.map((member) => ({
     id: member.id,

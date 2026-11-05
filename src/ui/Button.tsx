@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from 'react'
 import styles from './Button.module.css'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'accent' | 'quiet'
+  variant?: 'primary' | 'accent' | 'quiet' | 'danger'
 }
 
 export function Button({ variant = 'primary', type = 'button', className = '', ...props }: ButtonProps) {

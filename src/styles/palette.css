@@ -54,6 +54,7 @@
 
   /* Due dates and errors */
   --color-overdue: var(--palette-red);
+  --color-overdue-hover: color-mix(in srgb, var(--palette-red) 85%, var(--palette-black));
   --color-on-overdue: var(--palette-white);
   --color-overdue-inverse: var(--palette-coral);
   --color-due-soon: var(--palette-yellow);

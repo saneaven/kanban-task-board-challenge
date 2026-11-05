@@ -21,6 +21,8 @@ export function Dialog({ label, className, style, onClose, children }: DialogPro
 
   function handleCancel(event: SyntheticEvent) {
     event.preventDefault()
+    const activeElement = document.activeElement as HTMLElement | null
+    activeElement?.blur()
     onClose()
   }
 

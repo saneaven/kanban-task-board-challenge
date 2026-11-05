@@ -1,23 +1,19 @@
-import type { FormEvent } from 'react'
-import { Button } from '../../ui/Button'
-import inputStyles from '../../ui/Input.module.css'
-import styles from './AddMemberForm.module.css'
+import { AddNameForm } from '../../ui/AddNameForm'
 
-export function AddMemberForm({ onClose }: { onClose: () => void }) {
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    onClose()
-  }
+type AddMemberFormProps = {
+  variant?: 'primary' | 'accent'
+  onAdd: (name: string) => void
+  onClose: () => void
+}
 
+export function AddMemberForm({ variant = 'accent', onAdd, onClose }: AddMemberFormProps) {
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <label className="visually-hidden" htmlFor="member-name">
-        Team member name
-      </label>
-      <input id="member-name" className={`${inputStyles.input} ${styles.input}`} type="text" placeholder="Name" autoFocus />
-      <Button variant="accent" type="submit">
-        Add
-      </Button>
-    </form>
+    <AddNameForm
+      label="Team member name"
+      placeholder="Name"
+      variant={variant}
+      onAdd={onAdd}
+      onClose={onClose}
+    />
   )
 }

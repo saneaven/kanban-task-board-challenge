@@ -1,11 +1,7 @@
 .form {
-  position: sticky;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-  margin-top: auto;
-  padding: 12px 0 16px;
-  background: inherit;
+  padding-top: 12px;
 }

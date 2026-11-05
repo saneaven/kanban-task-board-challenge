@@ -40,6 +40,15 @@
   background: var(--color-drop-target);
 }
 
+.danger {
+  background: var(--color-overdue);
+  color: var(--color-on-overdue);
+}
+
+.danger:hover {
+  background: var(--color-overdue-hover);
+}
+
 @media (max-width: 720px) {
   .button {
     height: 44px;

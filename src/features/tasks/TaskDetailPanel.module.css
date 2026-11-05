@@ -1,6 +1,8 @@
 .panel {
   --option-background: var(--color-surface-on-status);
   --option-background-hover: var(--color-surface);
+  --toast-position: static;
+  --toast-max-width: 100%;
 
   inset: 0 0 0 auto;
   width: min(620px, 100%);
@@ -13,6 +15,7 @@
   border: 0;
   box-shadow: -24px 0 60px var(--color-border-strong);
   color: var(--color-text);
+  overflow-wrap: anywhere;
   animation: slide-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -77,6 +80,7 @@
   font-size: 15px;
   line-height: 1.5;
   text-wrap: pretty;
+  white-space: pre-wrap;
 }
 
 .properties {
@@ -100,6 +104,11 @@
   font-weight: 600;
 }
 
+.propertyValue {
+  grid-column: 2;
+  margin-top: 6px;
+}
+
 .dueInput {
   width: auto;
   height: 32px;
@@ -113,15 +122,35 @@
 
 .feed {
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 12px;
   padding-top: 18px;
-  background: inherit;
 }
 
 .feedTitle {
   font: 700 19px var(--font-display);
+}
+
+.feedError {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.feedRetry {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px 16px;
 }
 
 @keyframes slide-in {
@@ -158,6 +187,18 @@
   .property {
     grid-template-columns: minmax(0, 1fr);
     gap: 4px;
+  }
+
+  .propertyValue {
+    grid-column: 1;
+  }
+
+  .feedRetry {
+    min-height: 44px;
+  }
+
+  .footer {
+    padding: 0 16px 16px;
   }
 
   .dueInput {

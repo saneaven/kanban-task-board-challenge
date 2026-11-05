@@ -9,7 +9,7 @@ const task: Task = {
   status: 'todo',
   priority: 'high',
   position: 1,
-  labels: [{ id: 'bug', name: 'Bug', color: null }],
+  labels: [{ id: 'bug', name: 'Bug' }],
   assignees: [{ id: 'mina', name: 'Mina Park', initials: 'MP', color: 'var(--color-avatar-1)' }],
   commentCount: 0,
 }

@@ -6,13 +6,17 @@ import { Toast } from '../../ui/Toast'
 import { LockIcon, PlusIcon, RetryIcon, SearchIcon, WarningIcon } from '../../ui/icons'
 import type { GuestSessionStatus } from '../auth/guestSession'
 import { TaskCard } from '../tasks/TaskCard'
-import { createTask, moveTask as saveTaskPosition, type TaskRow } from '../tasks/api'
+import { createTask, deleteTask, updateTask, type TaskPatch, type TaskRow } from '../tasks/api'
+import { createMember, setAssignee, type MemberRow } from '../team/api'
+import { createLabel, setTaskLabel } from '../labels/api'
+import { createComment } from '../comments/api'
+import { commentEntryId, type TimelineEntry } from '../activity/timeline'
 import { TaskComposer } from '../tasks/TaskComposer'
 import { TaskDetailPanel } from '../tasks/TaskDetailPanel'
 import { AddMemberForm } from '../team/AddMemberForm'
 import { Avatar } from '../team/Avatar'
 import { columns, columnsByStatus } from './columns'
-import { priorities, priorityNames, type Task, type TaskDraft, type TaskStatus } from './types'
+import { priorities, priorityNames, type Label, type Member, type Task, type TaskDraft, type TaskStatus } from './types'
 import { positionBetween, positionForDrop } from './position'
 import { useBoardDrag } from './useBoardDrag'
 import { useBoardMutation } from './useBoardMutation'
@@ -36,7 +40,7 @@ type BoardProps = {
 export function Board({ sessionStatus, onRetrySession }: BoardProps) {
   const { tasks, members, labels, hasData, isError: queryError, retry } = useBoardData(sessionStatus === 'ready')
   const filters = useBoardFilters(tasks)
-  const { mutate, toast } = useBoardMutation<TaskRow[]>(['tasks'])
+  const { mutate, toast } = useBoardMutation()
   const toastElement = toast && <Toast text={toast.text} onRetry={toast.retry} onDismiss={toast.dismiss} />
   const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null)
   const [landedId, setLandedId] = useState<string | null>(null)
@@ -55,8 +59,9 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
     const position = positionForDrop(tasks, task, status, anchorId)
     if (task.status === status && task.position === position) return
 
-    mutate({
-      request: () => saveTaskPosition(task.id, status, position),
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
+      request: () => updateTask(task.id, { status, position }),
       update: (rows) => rows.map((row) => row.id === task.id ? { ...row, status, position } : row),
       errorText: (rows) => {
         const currentStatus = rows.find((row) => row.id === task.id)?.status as TaskStatus | undefined
@@ -82,12 +87,127 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
     }
     const { task_labels, task_assignees, comments, ...input } = row
 
-    mutate({
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
       request: () => createTask(input),
       update: (rows) => rows.some((task) => task.id === row.id) ? rows : [row, ...rows],
       errorText: () => `Couldn’t create “${row.title}”.`,
     })
     setLandedId(row.id)
+  }
+
+  function editTask(task: Task, patch: TaskPatch) {
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
+      request: () => updateTask(task.id, patch),
+      update: (rows) => rows.map((row) => row.id === task.id ? { ...row, ...patch } : row),
+      errorText: () => `Couldn’t save changes to “${task.title}”.`,
+    })
+  }
+
+  function removeTask(task: Task) {
+    setOpenTaskId(null)
+    setFocusedTaskId(null)
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
+      request: () => deleteTask(task.id),
+      update: (rows) => rows.filter((row) => row.id !== task.id),
+      errorText: () => `Couldn’t delete “${task.title}”. It’s back on your board.`,
+    })
+  }
+
+  function assignMember(task: Task, member: Pick<Member, 'id' | 'name'>, assigned: boolean) {
+    if (assigned === task.assignees.some((item) => item.id === member.id)) return
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
+      request: () => setAssignee(task.id, member.id, assigned),
+      update: (rows) => rows.map((row) => row.id === task.id ? {
+        ...row,
+        task_assignees: [
+          ...row.task_assignees.filter((item) => item.member_id !== member.id),
+          ...(assigned ? [{ member_id: member.id }] : []),
+        ],
+      } : row),
+      errorText: () => assigned
+        ? `Couldn’t assign “${member.name}” to “${task.title}”.`
+        : `Couldn’t unassign “${member.name}” from “${task.title}”.`,
+    })
+  }
+
+  function assignLabel(task: Task, label: Label, assigned: boolean) {
+    if (assigned === task.labels.some((item) => item.id === label.id)) return
+    mutate<TaskRow>({
+      queryKey: ['tasks'],
+      request: () => setTaskLabel(task.id, label.id, assigned),
+      update: (rows) => rows.map((row) => row.id === task.id ? {
+        ...row,
+        task_labels: [
+          ...row.task_labels.filter((item) => item.label_id !== label.id),
+          ...(assigned ? [{ label_id: label.id }] : []),
+        ],
+      } : row),
+      errorText: () => assigned
+        ? `Couldn’t add label “${label.name}” to “${task.title}”.`
+        : `Couldn’t remove label “${label.name}” from “${task.title}”.`,
+    })
+  }
+
+  function addMember(name: string, task?: Task) {
+    const existing = task ? members.find((member) => member.name === name) : undefined
+    if (existing && task) {
+      assignMember(task, existing, true)
+      return
+    }
+
+    const member: MemberRow = {
+      id: crypto.randomUUID(),
+      name,
+      color: `avatar-${members.length % 4 + 1}`,
+    }
+    mutate<MemberRow>({
+      queryKey: ['members'],
+      request: async () => {
+        await createMember(member)
+        if (task) assignMember(task, member, true)
+      },
+      update: (rows) => rows.some((row) => row.id === member.id) ? rows : [...rows, member],
+      errorText: () => `Couldn’t add “${name}” to your team.`,
+    })
+  }
+
+  function addLabel(task: Task, name: string) {
+    const existing = labels.find((label) => label.name === name)
+    if (existing) {
+      assignLabel(task, existing, true)
+      return
+    }
+
+    const label: Label = { id: crypto.randomUUID(), name }
+    mutate<Label>({
+      queryKey: ['labels'],
+      request: async () => {
+        await createLabel(label)
+        assignLabel(task, label, true)
+      },
+      update: (rows) => rows.some((row) => row.id === label.id) ? rows : [...rows, label],
+      errorText: () => `Couldn’t create label “${name}”.`,
+    })
+  }
+
+  function addComment(task: Task, body: string) {
+    const id = crypto.randomUUID()
+    const entry: TimelineEntry = {
+      id: commentEntryId(id),
+      kind: 'comment',
+      text: body,
+      createdAt: new Date().toISOString(),
+    }
+    mutate<TimelineEntry>({
+      queryKey: ['timeline', task.id],
+      request: () => createComment(id, task.id, body),
+      update: (rows) => rows.some((row) => row.id === entry.id) ? rows : [...rows, entry],
+      errorText: () => 'Couldn’t add your comment.',
+    })
   }
 
   const { drag, justDragged, handleDragStart, handleDragMove, handleDragEnd } = useBoardDrag((taskId, target) => {
@@ -171,13 +291,14 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
             <button
               type="button"
               className={styles.addMember}
+              disabled={isLoading}
               aria-label="Add team member"
               aria-expanded={isAddingMember}
               onClick={() => setIsAddingMember(!isAddingMember)}
             >
               <PlusIcon />
             </button>
-            {isAddingMember && <AddMemberForm onClose={() => setIsAddingMember(false)} />}
+            {isAddingMember && <AddMemberForm onAdd={(name) => addMember(name)} onClose={() => setIsAddingMember(false)} />}
           </div>
 
           <Button variant="accent" className={styles.newTask} disabled={isLoading} onClick={() => setComposerStatus('todo')}>
@@ -332,6 +453,16 @@ export function Board({ sessionStatus, onRetrySession }: BoardProps) {
             labels={labels}
             toast={toastElement}
             onStatusChange={(status) => move(openTask, status)}
+            onPriorityChange={(priority) => editTask(openTask, { priority })}
+            onDueChange={(dueDate) => editTask(openTask, { due_date: dueDate })}
+            onTitleChange={(title) => editTask(openTask, { title })}
+            onDescriptionChange={(description) => editTask(openTask, { description })}
+            onAssigneeToggle={(member) => assignMember(openTask, member, !openTask.assignees.some((item) => item.id === member.id))}
+            onLabelToggle={(label) => assignLabel(openTask, label, !openTask.labels.some((item) => item.id === label.id))}
+            onMemberCreate={(name) => addMember(name, openTask)}
+            onLabelCreate={(name) => addLabel(openTask, name)}
+            onComment={(body) => addComment(openTask, body)}
+            onDelete={() => removeTask(openTask)}
             onClose={() => {
               setFocusedTaskId(openTask.id)
               setOpenTaskId(null)

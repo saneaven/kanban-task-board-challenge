@@ -1,34 +1,39 @@
 import { useState } from 'react'
-import { useMutation, useMutationState, useQueryClient, type QueryKey } from '@tanstack/react-query'
+import { hashKey, useMutation, useMutationState, useQueryClient, type QueryKey } from '@tanstack/react-query'
 
-export type BoardOperation<T> = {
+export type BoardOperation<T = unknown> = {
+  queryKey: QueryKey
   request: () => Promise<void>
-  update: (data: T) => T
-  errorText: (data: T) => string
+  update: (data: T[]) => T[]
+  errorText: (data: T[]) => string
 }
 
-export function useOptimisticBoardData<T>(queryKey: QueryKey, data: T): T {
+export function useOptimisticBoardData<T>(queryKey: QueryKey, data: T[]): T[] {
   const operations = useMutationState({
-    filters: { mutationKey: ['board', ...queryKey], status: 'pending' },
-    select: (mutation) => mutation.state.variables as BoardOperation<T>,
+    filters: { mutationKey: ['board'], status: 'pending' },
+    select: (mutation) => mutation.state.variables as BoardOperation,
   })
+  const key = hashKey(queryKey)
 
-  return operations.reduce((current, operation) => current === undefined ? current : operation.update(current), data)
+  return operations
+    .filter((operation) => hashKey(operation.queryKey) === key)
+    .reduce((current, operation) => operation.update(current) as T[], data)
 }
 
-export function useBoardMutation<T>(queryKey: QueryKey) {
+export function useBoardMutation() {
   const client = useQueryClient()
-  const currentData = useOptimisticBoardData(queryKey, client.getQueryData<T>(queryKey))
-  const [failed, setFailed] = useState<BoardOperation<T> | null>(null)
+  const [failed, setFailed] = useState<BoardOperation | null>(null)
+  const queryKey = failed?.queryKey ?? []
+  const currentData = useOptimisticBoardData(queryKey, client.getQueryData<unknown[]>(queryKey) ?? [])
   const mutation = useMutation({
-    mutationKey: ['board', ...queryKey],
+    mutationKey: ['board'],
     scope: { id: 'board' },
     networkMode: 'always',
     retry: false,
-    mutationFn: (operation: BoardOperation<T>) => operation.request(),
+    mutationFn: (operation: BoardOperation) => operation.request(),
     onMutate: () => client.cancelQueries(),
     onSuccess: (_data, operation) => {
-      client.setQueryData<T>(queryKey, (current) => current === undefined ? current : operation.update(current))
+      client.setQueryData<unknown[]>(operation.queryKey, (current) => operation.update(current ?? []))
     },
     onError: (_error, operation) => setFailed((current) => current ?? operation),
     onSettled: () => {
@@ -38,9 +43,17 @@ export function useBoardMutation<T>(queryKey: QueryKey) {
     },
   })
 
+  function mutate<T>(operation: BoardOperation<T>) {
+    mutation.mutate({
+      ...operation,
+      update: (data) => operation.update(data as T[]),
+      errorText: (data) => operation.errorText(data as T[]),
+    })
+  }
+
   return {
-    mutate: mutation.mutate,
-    toast: failed && currentData !== undefined ? {
+    mutate,
+    toast: failed ? {
       text: failed.errorText(currentData),
       retry: () => {
         setFailed(null)
